@@ -94,7 +94,7 @@ Si incarnation < 5: Ils sont dans la lutte. Ramène-les au sentiment.
 Si stagnation: Ils intellectualisent. Pousse vers l'expérience.
 Si régression: C'est le signe d'une percée imminente. Explique pourquoi.
 
-Maximum 200 mots. Direct. Transformateur. Mémorable.`;
+Entre 150 et 250 mots. Direct. Transformateur. Mémorable. FINIS TOUJOURS ta pensée complètement.`;
 
     const userPrompt = `JOUR ${dayNumber}/30
 
@@ -125,7 +125,7 @@ Donne un feedback de MENTOR TRANSFORMATEUR basé sur leur ÉVOLUTION, pas juste 
       },
       body: JSON.stringify({
         model: 'claude-3-haiku-20240307',
-        max_tokens: 400,
+        max_tokens: 600,
         temperature: 0.7,
         system: systemPrompt,
         messages: [{
