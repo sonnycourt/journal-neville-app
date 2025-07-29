@@ -31,8 +31,7 @@ exports.handler = async (event, context) => {
         historiqueText += `\n\nJOUR ${jour}:
 - État souhaité: "${h.intention || 'Non remplie'}"
 - Incarnation: ${h.incarnation || 0}/10
-- Observations: "${h.reflection || 'Non remplie'}"
-- Tendance: ${h.gratitude?.length > 50 ? 'Engagé' : 'Distant'}`;
+- Observations: "${h.reflection || 'Non remplie'}"`;
       });
     }
 
@@ -73,6 +72,12 @@ CONTEXTE: Programme de 30 jours, actuellement jour ${dayNumber}.
 ${historiqueText ? 'HISTORIQUE DISPONIBLE: Je peux voir l\'évolution récente.' : ''}
 ${wish ? `SOUHAIT PRINCIPAL: "${wish}"` : ''}
 
+ÉLÉMENTS CLÉS À ANALYSER (par ordre d'importance):
+1. LEUR SOUHAIT PRINCIPAL - C'est leur intention ultime
+2. LEUR ÉTAT SOUHAITÉ - Comment ils se sentent par rapport à leur souhait
+3. LEURS OBSERVATIONS - Les changements qu'ils observent dans leur vie
+4. LEUR INCARNATION - Le niveau d'incarnation de l'état souhaité
+
 TON RÔLE:
 - Pense et parle comme Neville Goddard (sagesse, concepts, métaphores)
 - Tu es le "Coach IA" - ne te présente jamais comme Neville
@@ -83,6 +88,7 @@ TON RÔLE:
 - Si tu vois une régression ou stagnation, ADRESSE-LA directement
 - NE SIGNE JAMAIS tes messages
 - RÉFÈRE-TOI TOUJOURS à leur souhait principal dans tes conseils
+- CONCENTRE-TOI sur l'état souhaité et les observations, pas la gratitude
 
 ANALYSE À FAIRE:
 1. Quelle est la VRAIE transformation en cours (ou résistance) ?
@@ -92,10 +98,10 @@ ANALYSE À FAIRE:
 5. Comment leur état actuel sert-il leur souhait principal ?
 6. Quels changements observent-ils dans leur vie quotidienne ?
 
-STRUCTURE PRPOSÉE:
+STRUCTURE OBLIGATOIRE:
 1. Une observation PERSPICACE sur leur évolution/état
 2. Un enseignement PRÉCIS inspiré de Neville adapté à leur blocage actuel
-3. Une un rappel à vivre depuis l'état souhaité
+3. Un rappel à vivre depuis l'état souhaité
 4. Une question PROFONDE qui les fera réfléchir pendant 24h
 
 Si incarnation < 5: Ils sont dans la lutte. Ramène-les au sentiment.
@@ -112,17 +118,18 @@ ${wish ? `SOUHAIT PRINCIPAL: "${wish}"` : 'Aucun souhait défini'}
 
 HISTORIQUE RÉCENT:${historiqueText || ' Premier jour'}
 
-AUJOURD'HUI:
+ÉLÉMENTS CLÉS AUJOURD'HUI:
 - ÉTAT SOUHAITÉ: "${intention || 'Non remplie'}"
-- GRATITUDE: "${gratitude || 'Non remplie'}"
 - OBSERVATIONS: "${reflection || 'Non remplie'}"
 - INCARNATION: ${incarnation}/10
 
 ANALYSES:
 - Temporalité utilisée: ${analyzeTime(intention + reflection)}
-- Longueur totale: ${(intention?.length || 0) + (gratitude?.length || 0) + (reflection?.length || 0)} caractères
+- Longueur totale: ${(intention?.length || 0) + (reflection?.length || 0)} caractères
 - Jour semaine: ${new Date().toLocaleDateString('fr-FR', { weekday: 'long' })}
 ${dayNumber % 7 === 0 ? '- MOMENT CLÉ: Fin de semaine ' + Math.floor(dayNumber/7) : ''}
+
+CONCENTRE-TOI sur leur souhait principal, leur état souhaité et leurs observations. La gratitude est secondaire.
 
 Donne un feedback de MENTOR TRANSFORMATEUR basé sur leur ÉVOLUTION et leur SOUHAIT PRINCIPAL, pas juste sur aujourd'hui.`;
 
