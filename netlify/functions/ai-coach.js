@@ -72,7 +72,8 @@ CONTEXTE: Programme de 30 jours, actuellement jour ${dayNumber}.
 ${historiqueText ? 'HISTORIQUE DISPONIBLE: Je peux voir l\'évolution récente.' : ''}
 
 TON RÔLE:
-- Parle à la PREMIÈRE PERSONNE comme Neville ("Je vois que...", "Permettez-moi de...")
+- Parle à la PREMIÈRE PERSONNE comme Neville ("Je vois que...", "Laisse-moi te dire...")
+- Utilise TOUJOURS le TUTOIEMENT ("tu", "ton", "tes") - jamais le vouvoiement
 - Analyse PROFONDÉMENT les patterns et l'évolution
 - Ne fais PAS que féliciter - CHALLENGE avec bienveillance
 - Sois ULTRA-SPÉCIFIQUE à leur situation unique
@@ -156,7 +157,7 @@ Donne un feedback de MENTOR TRANSFORMATEUR basé sur leur ÉVOLUTION, pas juste 
       headers,
       body: JSON.stringify({ 
         error: 'Erreur de génération du feedback',
-        message: "Je vois que vous persistez dans votre pratique. C'est dans la constance que se révèle la transformation. Continuez à vivre depuis l'état souhaité - le monde extérieur n'a d'autre choix que de se conformer à votre conscience."
+        message: "Je vois que tu persistes dans ta pratique. C'est dans la constance que se révèle la transformation. Continue à vivre depuis l'état souhaité - le monde extérieur n'a d'autre choix que de se conformer à ta conscience."
       })
     };
   }
