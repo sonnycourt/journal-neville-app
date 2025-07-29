@@ -1301,6 +1301,88 @@
             border: 2px solid #667eea;
         }
 
+        /* Section bas de page */
+        .footer-section {
+            margin-top: 60px;
+            padding: 30px 20px;
+            background: var(--bg-section);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .review-btn {
+            background: var(--bg-gradient);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .review-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--shadow);
+        }
+
+        .support-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .support-email {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .support-email:hover {
+            color: var(--accent-color);
+        }
+
+        /* Dark mode pour le footer */
+        body.dark-mode .footer-section {
+            background: var(--bg-section);
+            border-top-color: var(--border-color);
+        }
+
+        body.dark-mode .support-info {
+            color: var(--text-secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .footer-section {
+                padding: 20px 15px;
+                margin-top: 40px;
+            }
+
+            .footer-content {
+                gap: 15px;
+            }
+
+            .review-btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+        }
+
         /* Ajustements spécifiques dark mode */
         body.dark-mode .day.completed {
             background: linear-gradient(135deg, #667eea, #764ba2);
@@ -3591,6 +3673,21 @@ function addSparkles(element) {
             </div>
         </div>
             </div>
+    </div>
+
+    <!-- Section bas de page -->
+    <div class="footer-section">
+        <div class="footer-content">
+            <button class="review-btn" onclick="showReviewPopup()">
+                💬 Donner mon avis
+            </button>
+            <div class="support-info">
+                <span>Besoin d'aide ?</span>
+                <a href="mailto:support@sonnycourt.com" class="support-email">
+                    support@sonnycourt.com
+                </a>
+            </div>
+        </div>
     </div>
 
     <!-- Bouton toggle thème -->
