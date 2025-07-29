@@ -1,89 +1,163 @@
 exports.handler = async (event, context) => {
-    // CORS headers
-    const headers = {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Headers': 'Content-Type',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS'
-    };
-  
-    // Handle preflight
-    if (event.httpMethod === 'OPTIONS') {
-      return { statusCode: 200, headers, body: '' };
-    }
-  
-    if (event.httpMethod !== 'POST') {
-      return { statusCode: 405, headers, body: 'Method Not Allowed' };
-    }
-  
-    try {
-      const { intention, gratitude, reflection, incarnation, dayNumber } = JSON.parse(event.body);
-      
-      // Votre clé API depuis les variables d'environnement Netlify
-      const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
-      
-      const systemPrompt = `Tu es un coach spirituel inspiré par les enseignements de Neville Goddard. 
-      Tu analyses les entrées de journal de transformation personnelle et donnes des feedbacks encourageants et profonds.
-      
-      Principes à suivre:
-      - Toujours être positif et encourageant
-      - Citer ou paraphraser Neville quand c'est pertinent
-      - Mettre l'accent sur le pouvoir de l'imagination et du sentiment
-      - Rappeler l'importance de vivre dans l'état souhaité
-      - Être concis mais impactant (max 150 mots)
-      - Utiliser des métaphores spirituelles
-      - Terminer par une affirmation puissante ou un conseil pratique`;
-  
-      const userPrompt = `Jour ${dayNumber} du programme.
-      Intention: ${intention}
-      Gratitude: ${gratitude}
-      Réflexion: ${reflection}
-      Niveau d'incarnation: ${incarnation}/10
-      
-      Donne un feedback personnalisé et motivant basé sur ces entrées.`;
-  
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': ANTHROPIC_API_KEY,
-          'anthropic-version': '2023-06-01'
-        },
-        body: JSON.stringify({
-          model: 'claude-3-haiku-20240307', // Modèle économique
-          max_tokens: 300,
-          temperature: 0.7,
-          system: systemPrompt,
-          messages: [{
-            role: 'user',
-            content: userPrompt
-          }]
-        })
-      });
-  
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.error?.message || 'API Error');
-      }
-  
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify({
-          message: data.content[0].text
-        })
-      };
-  
-    } catch (error) {
-      console.error('Error:', error);
-      return {
-        statusCode: 500,
-        headers,
-        body: JSON.stringify({ 
-          error: 'Erreur de génération du feedback',
-          // Fallback sur un message générique
-          message: "Continue ton magnifique travail ! Chaque jour, tu te rapproches de ton état désiré. Souviens-toi : l'imagination est la clé de toute transformation."
-        })
-      };
-    }
+  // CORS headers
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS'
   };
+
+  // Handle preflight
+  if (event.httpMethod === 'OPTIONS') {
+    return { statusCode: 200, headers, body: '' };
+  }
+
+  if (event.httpMethod !== 'POST') {
+    return { statusCode: 405, headers, body: 'Method Not Allowed' };
+  }
+
+  try {
+    const body = JSON.parse(event.body);
+    const { intention, gratitude, reflection, incarnation, dayNumber, historique } = body;
+    
+    // Votre clé API depuis les variables d'environnement Netlify
+    const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+    
+    // Analyser l'historique
+    let historiqueText = '';
+    if (historique && Object.keys(historique).length > 0) {
+      const jours = Object.keys(historique).sort((a, b) => b - a).slice(0, 3);
+      jours.forEach(jour => {
+        const h = historique[jour];
+        historiqueText += `\n\nJOUR ${jour}:
+- Intention: "${h.intention || 'Non remplie'}"
+- Incarnation: ${h.incarnation || 0}/10
+- Tendance: ${h.gratitude?.length > 50 ? 'Engagé' : 'Distant'}`;
+      });
+    }
+
+    // Analyser les tendances
+    const analyzeTime = (text) => {
+      if (!text) return 'Non analysable';
+      const futurWords = ['vais', 'voudrais', 'aimerais', 'sera', 'ferai', 'pourrai'];
+      const presentWords = ['suis', 'ai', 'vis', 'ressens', 'incarne'];
+      
+      const textLower = text.toLowerCase();
+      const hasFutur = futurWords.some(word => textLower.includes(word));
+      const hasPresent = presentWords.some(word => textLower.includes(word));
+      
+      if (hasFutur && !hasPresent) return 'FUTUR (problématique)';
+      if (hasPresent && !hasFutur) return 'PRÉSENT (excellent)';
+      return 'MIXTE';
+    };
+
+    // Analyser l'évolution de l'incarnation
+    let evolutionIncarnation = '';
+    if (historique) {
+      const incarnations = Object.entries(historique)
+        .map(([jour, data]) => ({ jour: parseInt(jour), incarnation: data.incarnation || 0 }))
+        .sort((a, b) => a.jour - b.jour);
+      
+      if (incarnations.length >= 2) {
+        const derniere = incarnations[incarnations.length - 1].incarnation;
+        const diff = incarnation - derniere;
+        if (diff > 0) evolutionIncarnation = `PROGRESSION (+${diff})`;
+        else if (diff < 0) evolutionIncarnation = `RÉGRESSION (${diff})`;
+        else evolutionIncarnation = 'STAGNATION';
+      }
+    }
+
+    const systemPrompt = `Tu es Neville Goddard lui-même, revenu pour guider personnellement cet étudiant dans sa transformation.
+
+CONTEXTE: Programme de 30 jours, actuellement jour ${dayNumber}.
+${historiqueText ? 'HISTORIQUE DISPONIBLE: Je peux voir l\'évolution récente.' : ''}
+
+TON RÔLE:
+- Parle à la PREMIÈRE PERSONNE comme Neville ("Je vois que...", "Permettez-moi de...")
+- Analyse PROFONDÉMENT les patterns et l'évolution
+- Ne fais PAS que féliciter - CHALLENGE avec bienveillance
+- Sois ULTRA-SPÉCIFIQUE à leur situation unique
+- Si tu vois une régression ou stagnation, ADRESSE-LA directement
+
+ANALYSE À FAIRE:
+1. Quelle est la VRAIE transformation en cours (ou résistance) ?
+2. Y a-t-il cohérence entre intention et incarnation ?
+3. L'évolution révèle-t-elle des patterns cachés ?
+4. Utilisent-ils la technique ou VIVENT-ils l'état ?
+
+STRUCTURE OBLIGATOIRE:
+1. Une observation PERSPICACE sur leur évolution/état
+2. Un enseignement PRÉCIS de Neville adapté à leur blocage actuel
+3. Une technique CONCRÈTE pour ce soir même
+4. Une question PROFONDE qui les fera réfléchir pendant 24h
+
+Si incarnation < 5: Ils sont dans la lutte. Ramène-les au sentiment.
+Si stagnation: Ils intellectualisent. Pousse vers l'expérience.
+Si régression: C'est le signe d'une percée imminente. Explique pourquoi.
+
+Maximum 200 mots. Direct. Transformateur. Mémorable.`;
+
+    const userPrompt = `JOUR ${dayNumber}/30
+
+ÉVOLUTION INCARNATION: ${evolutionIncarnation}
+
+HISTORIQUE RÉCENT:${historiqueText || ' Premier jour'}
+
+AUJOURD'HUI:
+- INTENTION: "${intention || 'Non remplie'}"
+- GRATITUDE: "${gratitude || 'Non remplie'}"
+- RÉFLEXION: "${reflection || 'Non remplie'}"
+- INCARNATION: ${incarnation}/10
+
+ANALYSES:
+- Temporalité utilisée: ${analyzeTime(intention + reflection)}
+- Longueur totale: ${(intention?.length || 0) + (gratitude?.length || 0) + (reflection?.length || 0)} caractères
+- Jour semaine: ${new Date().toLocaleDateString('fr-FR', { weekday: 'long' })}
+${dayNumber % 7 === 0 ? '- MOMENT CLÉ: Fin de semaine ' + Math.floor(dayNumber/7) : ''}
+
+Donne un feedback de MENTOR TRANSFORMATEUR basé sur leur ÉVOLUTION, pas juste sur aujourd'hui.`;
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-3-haiku-20240307',
+        max_tokens: 400,
+        temperature: 0.7,
+        system: systemPrompt,
+        messages: [{
+          role: 'user',
+          content: userPrompt
+        }]
+      })
+    });
+
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.error?.message || 'API Error');
+    }
+
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({
+        message: data.content[0].text
+      })
+    };
+
+  } catch (error) {
+    console.error('Error:', error);
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({ 
+        error: 'Erreur de génération du feedback',
+        message: "Je vois que vous persistez dans votre pratique. C'est dans la constance que se révèle la transformation. Continuez à vivre depuis l'état souhaité - le monde extérieur n'a d'autre choix que de se conformer à votre conscience."
+      })
+    };
+  }
+};

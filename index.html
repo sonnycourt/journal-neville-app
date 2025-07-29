@@ -2125,26 +2125,31 @@ function getCurrentProgramDay() {
         
         // NOUVEAU : Si un message IA existe, l'afficher directement
         if (entry.aiMessage) {
-            // Créer la boîte si elle n'existe pas
-            let feedbackBox = document.getElementById('aiFeedbackBox');
-            if (!feedbackBox) {
-                feedbackBox = document.createElement('div');
-                feedbackBox.id = 'aiFeedbackBox';
-                feedbackBox.className = 'ai-feedback-box show';
-                feedbackBox.innerHTML = `
-                    <div class="ai-feedback-header">
-                        <div class="ai-icon">✨</div>
-                        <div class="ai-label">Message de votre Coach IA</div>
-                    </div>
-                    <div class="ai-feedback-content" id="aiFeedbackContent">
-                        ${entry.aiMessage}
-                    </div>
-                `;
-                entriesContainer.appendChild(feedbackBox);
-            } else {
-                feedbackBox.classList.add('show');
-                document.getElementById('aiFeedbackContent').innerHTML = entry.aiMessage;
-            }
+            // Attendre que le DOM soit prêt
+            setTimeout(() => {
+                let feedbackBox = document.getElementById('aiFeedbackBox');
+                if (!feedbackBox) {
+                    feedbackBox = document.createElement('div');
+                    feedbackBox.id = 'aiFeedbackBox';
+                    feedbackBox.className = 'ai-feedback-box show';
+                    feedbackBox.innerHTML = `
+                        <div class="ai-feedback-header">
+                            <div class="ai-icon">✨</div>
+                            <div class="ai-label">Message de votre Coach Neville</div>
+                        </div>
+                        <div class="ai-feedback-content" id="aiFeedbackContent">
+                            ${entry.aiMessage}
+                        </div>
+                    `;
+                    const saveBtn = document.querySelector('.save-btn');
+                    if (saveBtn && saveBtn.parentNode) {
+                        saveBtn.parentNode.insertBefore(feedbackBox, saveBtn.nextSibling);
+                    }
+                } else {
+                    feedbackBox.classList.add('show');
+                    document.getElementById('aiFeedbackContent').innerHTML = entry.aiMessage;
+                }
+            }, 100);
         }
         
         // Afficher le bouton de célébration si terminé
@@ -3243,7 +3248,7 @@ async function showAIFeedback(entry, dayNumber) {
         feedbackBox.innerHTML = `
             <div class="ai-feedback-header">
                 <div class="ai-icon">✨</div>
-                <div class="ai-label">Message de votre Coach IA (Neville)</div>
+                <div class="ai-label">Message de votre Coach Neville</div>
             </div>
             <div class="ai-feedback-content" id="aiFeedbackContent">
                 <div class="ai-loading">
@@ -3257,13 +3262,30 @@ async function showAIFeedback(entry, dayNumber) {
         `;
         
         const saveBtn = document.querySelector('.save-btn');
-        saveBtn.parentNode.insertBefore(feedbackBox, saveBtn.nextSibling);
+        if (saveBtn && saveBtn.parentNode) {
+            saveBtn.parentNode.insertBefore(feedbackBox, saveBtn.nextSibling);
+        }
     }
     
     feedbackBox.classList.add('show');
     
+    // Préparer l'historique (3 derniers jours max)
+    const historique = {};
+    const startDay = Math.max(1, dayNumber - 3);
+    for (let i = startDay; i < dayNumber; i++) {
+        if (journalData.entries[i]) {
+            historique[i] = {
+                intention: journalData.entries[i].intention,
+                gratitude: journalData.entries[i].gratitude,
+                reflection: journalData.entries[i].reflection,
+                incarnation: journalData.entries[i].incarnation,
+                completed: journalData.entries[i].completed
+            };
+        }
+    }
+    
     try {
-        // Appeler la fonction Netlify
+        // Appeler la fonction Netlify avec l'historique
         const response = await fetch('/.netlify/functions/ai-coach', {
             method: 'POST',
             headers: {
@@ -3274,7 +3296,8 @@ async function showAIFeedback(entry, dayNumber) {
                 gratitude: entry.gratitude,
                 reflection: entry.reflection,
                 incarnation: entry.incarnation,
-                dayNumber: dayNumber
+                dayNumber: dayNumber,
+                historique: historique
             })
         });
         
@@ -3288,22 +3311,38 @@ async function showAIFeedback(entry, dayNumber) {
         journalData.entries[dayNumber].aiMessage = message;
         saveToFirebase(journalData);
         
-        // Afficher le message
-        displayAIMessage(message);
+        // Afficher le message avec animation
+        const content = document.getElementById('aiFeedbackContent');
+        content.innerHTML = '';
+        let index = 0;
+        const typingSpeed = 15;
+        
+        function typeWriter() {
+            if (index < message.length) {
+                content.innerHTML += message.charAt(index);
+                index++;
+                setTimeout(typeWriter, typingSpeed);
+            } else {
+                addSparkles(feedbackBox);
+            }
+        }
+        
+        typeWriter();
         
     } catch (error) {
         console.error('Erreur API:', error);
         // Utiliser le système de règles comme fallback
         const message = generateAIFeedback(entry, dayNumber);
         
-        // Sauvegarder aussi le message fallback
         if (!journalData.entries[dayNumber]) {
             journalData.entries[dayNumber] = {};
         }
         journalData.entries[dayNumber].aiMessage = message;
         saveToFirebase(journalData);
         
-        displayAIMessage(message);
+        const content = document.getElementById('aiFeedbackContent');
+        content.innerHTML = message;
+        addSparkles(feedbackBox);
     }
 }
 
