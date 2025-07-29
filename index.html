@@ -2203,7 +2203,7 @@ if (dayNumber === 1 && !journalData.startDate) {
                 incarnation: journalData.entries[dayNumber].incarnation || 0
             };
             showAIFeedback(entry, dayNumber);
-        }, 500);
+        }, 1000);
     }
 
     function updateStats() {
@@ -3188,7 +3188,14 @@ function openModal(modalId) {
 
 // Fonctions pour la boîte IA
 async function showAIFeedback(entry, dayNumber) {
-    // Créer ou récupérer la boîte de feedback
+    // Vérifier si on a déjà un message IA sauvegardé pour ce jour
+    if (journalData.entries[dayNumber]?.aiMessage) {
+        // Afficher le message sauvegardé
+        displayAIMessage(journalData.entries[dayNumber].aiMessage);
+        return;
+    }
+    
+    // Créer la boîte de feedback
     let feedbackBox = document.getElementById('aiFeedbackBox');
     
     if (!feedbackBox) {
@@ -3234,32 +3241,31 @@ async function showAIFeedback(entry, dayNumber) {
         });
         
         const data = await response.json();
-        const message = data.message || generateAIFeedback(entry, dayNumber); // Fallback
+        const message = data.message || generateAIFeedback(entry, dayNumber);
         
-        // Afficher avec effet typing
-        const content = document.getElementById('aiFeedbackContent');
-        content.innerHTML = '';
-        let index = 0;
-        const typingSpeed = 20;
-        
-        function typeWriter() {
-            if (index < message.length) {
-                content.innerHTML += message.charAt(index);
-                index++;
-                setTimeout(typeWriter, typingSpeed);
-            } else {
-                addSparkles(feedbackBox);
-            }
+        // SAUVEGARDER LE MESSAGE DANS FIREBASE
+        if (!journalData.entries[dayNumber]) {
+            journalData.entries[dayNumber] = {};
         }
+        journalData.entries[dayNumber].aiMessage = message;
+        saveToFirebase(journalData);
         
-        typeWriter();
+        // Afficher le message
+        displayAIMessage(message);
         
     } catch (error) {
         console.error('Erreur API:', error);
         // Utiliser le système de règles comme fallback
-        const content = document.getElementById('aiFeedbackContent');
-        content.innerHTML = generateAIFeedback(entry, dayNumber);
-        addSparkles(feedbackBox);
+        const message = generateAIFeedback(entry, dayNumber);
+        
+        // Sauvegarder aussi le message fallback
+        if (!journalData.entries[dayNumber]) {
+            journalData.entries[dayNumber] = {};
+        }
+        journalData.entries[dayNumber].aiMessage = message;
+        saveToFirebase(journalData);
+        
+        displayAIMessage(message);
     }
 }
 
@@ -3345,6 +3351,32 @@ function generateAIFeedback(entry, dayNumber) {
     }
     
     return selectedMessage + dayMessage;
+}
+
+// Nouvelle fonction pour afficher le message
+function displayAIMessage(message) {
+    const feedbackBox = document.getElementById('aiFeedbackBox');
+    if (!feedbackBox) return;
+    
+    feedbackBox.classList.add('show');
+    const content = document.getElementById('aiFeedbackContent');
+    content.innerHTML = '';
+    
+    // Effet de typing
+    let index = 0;
+    const typingSpeed = 20;
+    
+    function typeWriter() {
+        if (index < message.length) {
+            content.innerHTML += message.charAt(index);
+            index++;
+            setTimeout(typeWriter, typingSpeed);
+        } else {
+            addSparkles(feedbackBox);
+        }
+    }
+    
+    typeWriter();
 }
 
 function addSparkles(element) {
