@@ -2415,8 +2415,35 @@ function getCurrentProgramDay() {
             setTimeout(() => {
                 showCelebration();
                 localStorage.setItem('celebrated_' + currentUser.uid, 'true');
+                
+                // NOUVEAU : Envoyer l'email de félicitations
+                sendCompletionEmail();
             }, 1000);
         }
+    }
+}
+
+// Nouvelle fonction pour l'email
+async function sendCompletionEmail() {
+    try {
+        const response = await fetch('/.netlify/functions/celebrate-completion', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: currentUser.email,
+                userName: currentUser.email.split('@')[0]
+            })
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            console.log('✅ Email de félicitations envoyé !');
+        }
+    } catch (error) {
+        console.error('Erreur envoi email:', error);
+        // Ne pas bloquer l'expérience utilisateur
     }
 }
     // Afficher la célébration
