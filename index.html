@@ -2104,18 +2104,16 @@ function getCurrentProgramDay() {
                 </div>
             </div>
             
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <button class="save-btn" onclick="saveEntry(${dayNumber})">
-                    ${entry.completed ? '✓ Mettre à jour' : '💾 Sauvegarder'}
+            <button class="save-btn" onclick="saveEntry(${dayNumber})">
+                ${entry.completed ? '✓ Mettre à jour' : '💾 Sauvegarder'}
+            </button>
+            
+            <!-- Bouton pour demander un feedback IA -->
+            ${entry.completed && !entry.aiMessage ? `
+                <button class="ai-request-btn" onclick="requestAIFeedback(${dayNumber})" style="margin-top: 10px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.3s ease;">
+                    ✨ Demander un feedback IA
                 </button>
-                
-                <!-- Bouton pour demander un feedback IA -->
-                ${entry.completed && !entry.aiMessage ? `
-                    <button class="ai-request-btn" onclick="requestAIFeedback(${dayNumber})" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.3s ease;">
-                        ✨ Demander un feedback IA
-                    </button>
-                ` : ''}
-            </div>
+            ` : ''}
             
             <!-- Affichage du message IA existant -->
             ${entry.aiMessage ? `
