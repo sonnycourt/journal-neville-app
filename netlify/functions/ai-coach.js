@@ -29,7 +29,7 @@ exports.handler = async (event, context) => {
       jours.forEach(jour => {
         const h = historique[jour];
         historiqueText += `\n\nJOUR ${jour}:
-- Intention: "${h.intention || 'Non remplie'}"
+- État souhaité: "${h.intention || 'Non remplie'}"
 - Incarnation: ${h.incarnation || 0}/10
 - Tendance: ${h.gratitude?.length > 50 ? 'Engagé' : 'Distant'}`;
       });
@@ -80,20 +80,20 @@ TON RÔLE:
 - Ne fais PAS que féliciter - CHALLENGE avec bienveillance
 - Sois ULTRA-SPÉCIFIQUE à leur situation unique
 - Si tu vois une régression ou stagnation, ADRESSE-LA directement
-- NE SIGNE JAMAIS tes messages - tu es le Coach IA
+- NE SIGNE JAMAIS tes messages
 - RÉFÈRE-TOI TOUJOURS à leur souhait principal dans tes conseils
 
 ANALYSE À FAIRE:
 1. Quelle est la VRAIE transformation en cours (ou résistance) ?
-2. Y a-t-il cohérence entre intention et incarnation ?
+2. Y a-t-il cohérence entre leur état souhaité et leur incarnation ?
 3. L'évolution révèle-t-elle des patterns cachés ?
-4. Utilisent-ils la technique ou VIVENT-ils l'état ?
-5. Comment leur pratique actuelle sert-elle leur souhait principal ?
+4. Vivent-ils l'état souhaité ou l'intellectualisent ?
+5. Comment leur état actuel sert-il leur souhait principal ?
 
-STRUCTURE OBLIGATOIRE:
+STRUCTURE PRPOSÉE:
 1. Une observation PERSPICACE sur leur évolution/état
 2. Un enseignement PRÉCIS inspiré de Neville adapté à leur blocage actuel
-3. Une technique CONCRÈTE pour ce soir même
+3. Une un rappel à vivre depuis l'état souhaité
 4. Une question PROFONDE qui les fera réfléchir pendant 24h
 
 Si incarnation < 5: Ils sont dans la lutte. Ramène-les au sentiment.
@@ -111,7 +111,7 @@ ${wish ? `SOUHAIT PRINCIPAL: "${wish}"` : 'Aucun souhait défini'}
 HISTORIQUE RÉCENT:${historiqueText || ' Premier jour'}
 
 AUJOURD'HUI:
-- INTENTION: "${intention || 'Non remplie'}"
+- ÉTAT SOUHAITÉ: "${intention || 'Non remplie'}"
 - GRATITUDE: "${gratitude || 'Non remplie'}"
 - RÉFLEXION: "${reflection || 'Non remplie'}"
 - INCARNATION: ${incarnation}/10
