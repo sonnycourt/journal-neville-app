@@ -1979,6 +1979,16 @@ function getCurrentProgramDay() {
         if (!currentUser) return;
         
         const userId = currentUser.uid;
+        
+        // Sauvegarder l'email de l'utilisateur dans Firebase
+        database.ref('users/' + userId + '/email').set(currentUser.email)
+            .then(() => {
+                console.log('✅ Email sauvegardé dans Firebase:', currentUser.email);
+            })
+            .catch((error) => {
+                console.error('❌ Erreur sauvegarde email:', error);
+            });
+        
         database.ref('users/' + userId + '/journal').once('value')
             .then((snapshot) => {
                 const data = snapshot.val();
