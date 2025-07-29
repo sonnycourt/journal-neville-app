@@ -1978,10 +1978,15 @@ function getCurrentProgramDay() {
                         localStorage.setItem('journalStartDate', journalData.startDate);
                     }
                     updateUIWithData();
+                } else {
+                    // Si pas de données, initialiser quand même l'UI
+                    updateUIWithData();
                 }
             })
             .catch((error) => {
                 console.error('❌ Erreur de chargement:', error);
+                // En cas d'erreur, initialiser quand même l'UI
+                updateUIWithData();
             });
     }
 
@@ -2334,13 +2339,21 @@ function getCurrentProgramDay() {
         const ctx = document.getElementById('incarnationChart').getContext('2d');
         const isDarkMode = document.body.classList.contains('dark-mode');
         
+        // Préparer les données existantes
+        const data = Array(30).fill(null);
+        for (let i = 1; i <= 30; i++) {
+            if (journalData.entries[i] && journalData.entries[i].incarnation) {
+                data[i - 1] = journalData.entries[i].incarnation;
+            }
+        }
+        
         incarnationChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: Array.from({length: 30}, (_, i) => `Jour ${i + 1}`),
                 datasets: [{
                     label: 'Niveau d\'incarnation',
-                    data: Array(30).fill(null),
+                    data: data,
                     borderColor: '#667eea',
                     backgroundColor: 'rgba(102, 126, 234, 0.1)',
                     borderWidth: 3,
