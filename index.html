@@ -2108,6 +2108,26 @@ function getCurrentProgramDay() {
                 ${entry.completed ? '✓ Mettre à jour' : '💾 Sauvegarder'}
             </button>
             
+            <!-- Bouton pour demander un feedback IA -->
+            ${entry.completed && !entry.aiMessage ? `
+                <button class="ai-request-btn" onclick="requestAIFeedback(${dayNumber})" style="margin-top: 10px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.3s ease;">
+                    ✨ Demander un feedback IA
+                </button>
+            ` : ''}
+            
+            <!-- Affichage du message IA existant -->
+            ${entry.aiMessage ? `
+                <div class="ai-feedback-box show" style="margin-top: 15px;">
+                    <div class="ai-feedback-header">
+                        <div class="ai-icon">✨</div>
+                        <div class="ai-label">Message de ton Coach IA</div>
+                    </div>
+                    <div class="ai-feedback-content">
+                        ${entry.aiMessage}
+                    </div>
+                </div>
+            ` : ''}
+            
             <!-- Boîte IA -->
             <div class="ai-box" id="aiBox-${dayNumber}" style="display: none;">
                 <button class="ai-close" onclick="closeAiBox(${dayNumber})">×</button>
@@ -2128,34 +2148,7 @@ function getCurrentProgramDay() {
         
         entriesContainer.appendChild(entryDiv);
         
-        // NOUVEAU : Si un message IA existe, l'afficher directement
-        if (entry.aiMessage) {
-            // Attendre que le DOM soit prêt
-            setTimeout(() => {
-                let feedbackBox = document.getElementById('aiFeedbackBox');
-                if (!feedbackBox) {
-                    feedbackBox = document.createElement('div');
-                    feedbackBox.id = 'aiFeedbackBox';
-                    feedbackBox.className = 'ai-feedback-box show';
-                    feedbackBox.innerHTML = `
-                        <div class="ai-feedback-header">
-                            <div class="ai-icon">✨</div>
-                            <div class="ai-label">Message de ton Coach IA</div>
-                        </div>
-                        <div class="ai-feedback-content" id="aiFeedbackContent">
-                            ${entry.aiMessage}
-                        </div>
-                    `;
-                    const saveBtn = document.querySelector('.save-btn');
-                    if (saveBtn && saveBtn.parentNode) {
-                        saveBtn.parentNode.insertBefore(feedbackBox, saveBtn.nextSibling);
-                    }
-                } else {
-                    feedbackBox.classList.add('show');
-                    document.getElementById('aiFeedbackContent').innerHTML = entry.aiMessage;
-                }
-            }, 100);
-        }
+
         
         // Afficher le bouton de célébration si terminé
         const celebrationBtnEntry = document.getElementById('celebrationBtnEntry');
@@ -2233,25 +2226,10 @@ function getCurrentProgramDay() {
             btn.textContent = '✓ Mettre à jour';
         }, 2000);
         
-        // NOUVEAU : Gérer l'affichage de l'IA
-        const entry = {
-            intention,
-            gratitude,
-            reflection,
-            incarnation: journalData.entries[dayNumber]?.incarnation || 0
-        };
-        
-        // Afficher l'IA SEULEMENT si pas déjà de message
-        if (!journalData.entries[dayNumber].aiMessage) {
-            setTimeout(() => {
-                showAIFeedback(entry, dayNumber);
-            }, 1000);
-        } else {
-            // Si un message existe déjà, l'afficher
-            setTimeout(() => {
-                displayAIMessage(journalData.entries[dayNumber].aiMessage);
-            }, 1000);
-        }
+        // Recharger l'entrée pour afficher le bouton IA si nécessaire
+        setTimeout(() => {
+            showEntry(dayNumber);
+        }, 500);
     }
 
     function updateStats() {
@@ -3243,6 +3221,36 @@ function openModal(modalId) {
 }
 
 // Fonctions pour la boîte IA
+async function requestAIFeedback(dayNumber) {
+    // Récupérer les données de l'entrée
+    const entry = {
+        intention: document.getElementById(`intention-${dayNumber}`).value,
+        gratitude: document.getElementById(`gratitude-${dayNumber}`).value,
+        reflection: document.getElementById(`reflection-${dayNumber}`).value,
+        incarnation: journalData.entries[dayNumber]?.incarnation || 0
+    };
+    
+    // Vérifier que l'entrée est complète
+    if (!entry.intention || !entry.gratitude || !entry.reflection || !entry.incarnation) {
+        alert('Veuillez compléter tous les champs et sélectionner un niveau d\'incarnation avant de demander un feedback IA.');
+        return;
+    }
+    
+    // Désactiver le bouton pendant la génération
+    const btn = event.target;
+    const originalText = btn.textContent;
+    btn.textContent = '⏳ Génération en cours...';
+    btn.disabled = true;
+    
+    // Appeler la fonction de feedback IA
+    await showAIFeedback(entry, dayNumber);
+    
+    // Réactiver le bouton et le masquer
+    btn.textContent = originalText;
+    btn.disabled = false;
+    btn.style.display = 'none';
+}
+
 async function showAIFeedback(entry, dayNumber) {
     // Vérifier si on a déjà un message IA sauvegardé pour ce jour
     if (journalData.entries[dayNumber]?.aiMessage) {
