@@ -2123,6 +2123,30 @@ function getCurrentProgramDay() {
         
         entriesContainer.appendChild(entryDiv);
         
+        // NOUVEAU : Si un message IA existe, l'afficher directement
+        if (entry.aiMessage) {
+            // Créer la boîte si elle n'existe pas
+            let feedbackBox = document.getElementById('aiFeedbackBox');
+            if (!feedbackBox) {
+                feedbackBox = document.createElement('div');
+                feedbackBox.id = 'aiFeedbackBox';
+                feedbackBox.className = 'ai-feedback-box show';
+                feedbackBox.innerHTML = `
+                    <div class="ai-feedback-header">
+                        <div class="ai-icon">✨</div>
+                        <div class="ai-label">Message de votre Coach IA (Neville)</div>
+                    </div>
+                    <div class="ai-feedback-content" id="aiFeedbackContent">
+                        ${entry.aiMessage}
+                    </div>
+                `;
+                entriesContainer.appendChild(feedbackBox);
+            } else {
+                feedbackBox.classList.add('show');
+                document.getElementById('aiFeedbackContent').innerHTML = entry.aiMessage;
+            }
+        }
+        
         // Afficher le bouton de célébration si terminé
         const celebrationBtnEntry = document.getElementById('celebrationBtnEntry');
         if (journalData.entries[30] && journalData.entries[30].completed) {
@@ -3374,23 +3398,9 @@ function displayAIMessage(message) {
     
     feedbackBox.classList.add('show');
     const content = document.getElementById('aiFeedbackContent');
-    content.innerHTML = '';
     
-    // Effet de typing
-    let index = 0;
-    const typingSpeed = 20;
-    
-    function typeWriter() {
-        if (index < message.length) {
-            content.innerHTML += message.charAt(index);
-            index++;
-            setTimeout(typeWriter, typingSpeed);
-        } else {
-            addSparkles(feedbackBox);
-        }
-    }
-    
-    typeWriter();
+    // Pas d'animation, affichage direct
+    content.innerHTML = message;
 }
 
 function addSparkles(element) {
