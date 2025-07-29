@@ -17,7 +17,7 @@ exports.handler = async (event, context) => {
 
   try {
     const body = JSON.parse(event.body);
-    const { intention, gratitude, reflection, incarnation, dayNumber, historique } = body;
+    const { wish, intention, gratitude, reflection, incarnation, dayNumber, historique } = body;
     
     // Votre clé API depuis les variables d'environnement Netlify
     const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
@@ -70,6 +70,7 @@ exports.handler = async (event, context) => {
 
 CONTEXTE: Programme de 30 jours, actuellement jour ${dayNumber}.
 ${historiqueText ? 'HISTORIQUE DISPONIBLE: Je peux voir l\'évolution récente.' : ''}
+${wish ? `SOUHAIT PRINCIPAL: "${wish}"` : ''}
 
 TON RÔLE:
 - Pense et parle comme Neville Goddard (sagesse, concepts, métaphores)
@@ -80,12 +81,14 @@ TON RÔLE:
 - Sois ULTRA-SPÉCIFIQUE à leur situation unique
 - Si tu vois une régression ou stagnation, ADRESSE-LA directement
 - NE SIGNE JAMAIS tes messages - tu es le Coach IA
+- RÉFÈRE-TOI TOUJOURS à leur souhait principal dans tes conseils
 
 ANALYSE À FAIRE:
 1. Quelle est la VRAIE transformation en cours (ou résistance) ?
 2. Y a-t-il cohérence entre intention et incarnation ?
 3. L'évolution révèle-t-elle des patterns cachés ?
 4. Utilisent-ils la technique ou VIVENT-ils l'état ?
+5. Comment leur pratique actuelle sert-elle leur souhait principal ?
 
 STRUCTURE OBLIGATOIRE:
 1. Une observation PERSPICACE sur leur évolution/état
@@ -100,6 +103,8 @@ Si régression: C'est le signe d'une percée imminente. Explique pourquoi.
 Entre 150 et 250 mots. Direct. Transformateur. Mémorable. FINIS TOUJOURS ta pensée complètement.`;
 
     const userPrompt = `JOUR ${dayNumber}/30
+
+${wish ? `SOUHAIT PRINCIPAL: "${wish}"` : 'Aucun souhait défini'}
 
 ÉVOLUTION INCARNATION: ${evolutionIncarnation}
 
@@ -117,7 +122,7 @@ ANALYSES:
 - Jour semaine: ${new Date().toLocaleDateString('fr-FR', { weekday: 'long' })}
 ${dayNumber % 7 === 0 ? '- MOMENT CLÉ: Fin de semaine ' + Math.floor(dayNumber/7) : ''}
 
-Donne un feedback de MENTOR TRANSFORMATEUR basé sur leur ÉVOLUTION, pas juste sur aujourd'hui.`;
+Donne un feedback de MENTOR TRANSFORMATEUR basé sur leur ÉVOLUTION et leur SOUHAIT PRINCIPAL, pas juste sur aujourd'hui.`;
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',

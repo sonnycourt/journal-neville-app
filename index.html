@@ -2080,6 +2080,12 @@ function getCurrentProgramDay() {
             </div>
             
             <div class="entry-section">
+                <h3>🌟 Mon souhait</h3>
+                <textarea id="wish-${dayNumber}" placeholder="Quel est ton souhait principal pour ces 30 jours ? (ex: trouver l'amour, réussir mon projet, guérir...)" ${dayNumber === 1 ? '' : 'readonly'}>${journalData.wish || ''}</textarea>
+                ${dayNumber === 1 ? '<small style="color: #666; font-size: 0.9em; display: block; margin-top: 5px;">Ce souhait restera visible pendant tout le programme</small>' : ''}
+            </div>
+            
+            <div class="entry-section">
                 <h3>💫 Mon intention du jour</h3>
                 <textarea id="intention-${dayNumber}" placeholder="Quelle est ton intention pour aujourd'hui après avoir écouté l'audio ?">${entry.intention}</textarea>
             </div>
@@ -2174,6 +2180,7 @@ function getCurrentProgramDay() {
     }
 
     function saveEntry(dayNumber) {
+        const wish = document.getElementById(`wish-${dayNumber}`).value;
         const intention = document.getElementById(`intention-${dayNumber}`).value;
         const gratitude = document.getElementById(`gratitude-${dayNumber}`).value;
         const reflection = document.getElementById(`reflection-${dayNumber}`).value;
@@ -2192,6 +2199,11 @@ function getCurrentProgramDay() {
             completed: true,
             date: new Date().toISOString()
         };
+        
+        // Sauvegarder le souhait globalement si c'est le jour 1
+        if (dayNumber === 1 && wish.trim()) {
+            journalData.wish = wish;
+        }
         
         if (!wasCompleted) {
             journalData.stats.daysCompleted++;
@@ -3340,6 +3352,7 @@ async function showAIFeedback(entry, dayNumber) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
+                wish: journalData.wish || '',
                 intention: entry.intention,
                 gratitude: entry.gratitude,
                 reflection: entry.reflection,
