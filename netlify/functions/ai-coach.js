@@ -31,6 +31,7 @@ exports.handler = async (event, context) => {
         historiqueText += `\n\nJOUR ${jour}:
 - État souhaité: "${h.intention || 'Non remplie'}"
 - Incarnation: ${h.incarnation || 0}/10
+- Observations: "${h.reflection || 'Non remplie'}"
 - Tendance: ${h.gratitude?.length > 50 ? 'Engagé' : 'Distant'}`;
       });
     }
@@ -89,6 +90,7 @@ ANALYSE À FAIRE:
 3. L'évolution révèle-t-elle des patterns cachés ?
 4. Vivent-ils l'état souhaité ou l'intellectualisent ?
 5. Comment leur état actuel sert-il leur souhait principal ?
+6. Quels changements observent-ils dans leur vie quotidienne ?
 
 STRUCTURE PRPOSÉE:
 1. Une observation PERSPICACE sur leur évolution/état
@@ -113,7 +115,7 @@ HISTORIQUE RÉCENT:${historiqueText || ' Premier jour'}
 AUJOURD'HUI:
 - ÉTAT SOUHAITÉ: "${intention || 'Non remplie'}"
 - GRATITUDE: "${gratitude || 'Non remplie'}"
-- RÉFLEXION: "${reflection || 'Non remplie'}"
+- OBSERVATIONS: "${reflection || 'Non remplie'}"
 - INCARNATION: ${incarnation}/10
 
 ANALYSES:
