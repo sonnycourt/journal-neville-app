@@ -2166,25 +2166,23 @@ function getCurrentProgramDay() {
         
         saveToFirebase(journalData);
 
-// Définir la date de début lors du premier enregistrement
-if (dayNumber === 1 && !journalData.startDate) {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Minuit pour cohérence
-    journalData.startDate = today.toISOString();
-    // Sauvegarder aussi en local pour backup
-    localStorage.setItem('journalStartDate', today.toISOString());
-}
+        if (dayNumber === 1 && !localStorage.getItem('journalStartDate')) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            localStorage.setItem('journalStartDate', today.toISOString());
+        }
         
         document.getElementById(`day-${dayNumber}`).classList.add('completed');
         updateStats();
         checkCompletion();
         updateChart();
-        // Afficher le popup de review après le jour 3
-       if ([3, 6, 9, 12].includes(dayNumber) && !localStorage.getItem(`review_day3_${currentUser.uid}`)) {
-    setTimeout(() => {
-        showReviewPopup();
-    }, 1000);
-}
+        
+        if ([3, 6, 9, 12].includes(dayNumber) && !localStorage.getItem(`review_day3_${currentUser.uid}`)) {
+            setTimeout(() => {
+                showReviewPopup();
+            }, 1000);
+        }
+        
         initializeCalendar();
         
         // Animation de succès
@@ -2194,16 +2192,25 @@ if (dayNumber === 1 && !journalData.startDate) {
             btn.textContent = '✓ Mettre à jour';
         }, 2000);
         
-        // Afficher la boîte IA après l'enregistrement
-        setTimeout(() => {
-            const entry = {
-                intention: intention,
-                gratitude: gratitude,
-                reflection: reflection,
-                incarnation: journalData.entries[dayNumber].incarnation || 0
-            };
-            showAIFeedback(entry, dayNumber);
-        }, 1000);
+        // NOUVEAU : Gérer l'affichage de l'IA
+        const entry = {
+            intention,
+            gratitude,
+            reflection,
+            incarnation: journalData.entries[dayNumber]?.incarnation || 0
+        };
+        
+        // Afficher l'IA SEULEMENT si pas déjà de message
+        if (!journalData.entries[dayNumber].aiMessage) {
+            setTimeout(() => {
+                showAIFeedback(entry, dayNumber);
+            }, 1000);
+        } else {
+            // Si un message existe déjà, l'afficher
+            setTimeout(() => {
+                displayAIMessage(journalData.entries[dayNumber].aiMessage);
+            }, 1000);
+        }
     }
 
     function updateStats() {
