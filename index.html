@@ -3108,9 +3108,11 @@ const daysUntilNext = maxDay < totalDays ? 1 : 0;
     modal.style.top = currentScrollY + 'px';
     modal.classList.add('active');
     
-    // Faire défiler vers le popup pour qu'il soit centré dans le viewport
-    const popupPosition = currentScrollY + (viewportHeight / 2);
-    window.scrollTo({ top: popupPosition - (viewportHeight / 2), behavior: 'smooth' });
+    // Attendre un peu puis faire défiler vers le popup
+    setTimeout(() => {
+        const popupPosition = currentScrollY + (viewportHeight / 2);
+        window.scrollTo({ top: popupPosition - (viewportHeight / 2), behavior: 'smooth' });
+    }, 100);
 }
 
 // Fonction pour fermer le modal
