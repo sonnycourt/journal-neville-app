@@ -1959,6 +1959,34 @@ function getCurrentProgramDay() {
     };
     let incarnationChart = null;
 
+    // Fonctions pour la bulle d'info du souhait
+    function showWishInfo() {
+        const bubble = document.getElementById('wishInfoBubble');
+        if (bubble) {
+            bubble.classList.add('show');
+            
+            // Positionner la bulle près du bouton
+            const icon = document.querySelector('.wish-info-icon');
+            if (icon) {
+                const rect = icon.getBoundingClientRect();
+                bubble.style.left = rect.left + 'px';
+                bubble.style.top = (rect.bottom + 10) + 'px';
+            }
+            
+            // Fermer après 5 secondes
+            setTimeout(() => {
+                bubble.classList.remove('show');
+            }, 5000);
+        }
+    }
+
+    function closeWishInfo() {
+        const bubble = document.getElementById('wishInfoBubble');
+        if (bubble) {
+            bubble.classList.remove('show');
+        }
+    }
+
     // PROTECTION ANTI-SPAM : Vérifier si l'email peut envoyer
     function canSendEmail(email) {
         // Bloquer les domaines temporaires
@@ -2681,34 +2709,7 @@ async function sendCompletionEmail() {
         // Ne pas bloquer l'expérience utilisateur
     }
 }
-    // Afficher la bulle d'info du souhait
-    function showWishInfo() {
-        const bubble = document.getElementById('wishInfoBubble');
-        if (bubble) {
-            bubble.classList.add('show');
-            
-            // Positionner la bulle près du bouton
-            const icon = document.querySelector('.wish-info-icon');
-            if (icon) {
-                const rect = icon.getBoundingClientRect();
-                bubble.style.left = rect.left + 'px';
-                bubble.style.top = (rect.bottom + 10) + 'px';
-            }
-            
-            // Fermer après 5 secondes
-            setTimeout(() => {
-                bubble.classList.remove('show');
-            }, 5000);
-        }
-    }
 
-    // Fermer la bulle d'info
-    function closeWishInfo() {
-        const bubble = document.getElementById('wishInfoBubble');
-        if (bubble) {
-            bubble.classList.remove('show');
-        }
-    }
 
     // Afficher la célébration
     function showCelebration() {
