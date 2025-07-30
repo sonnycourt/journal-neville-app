@@ -983,8 +983,8 @@
 }
 
 .review-btn-primary.active {
-    background: linear-gradient(135deg, #8B5CF6, #A855F7);
-    box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
 }
 
 .review-btn-secondary {
@@ -1795,6 +1795,9 @@
     <div class="review-content">
         <div id="reviewForm">
             <div class="review-header">
+                <button class="back-btn" onclick="closeReview()" style="position: absolute; top: 20px; left: 20px; background: none; border: none; font-size: 1.5em; cursor: pointer; color: var(--text-secondary); transition: color 0.3s;">
+                    ← Retour
+                </button>
                 <h2 class="review-title">Ton avis compte ! ✨</h2>
                 <p class="review-subtitle">Comment évalues-tu ton expérience jusque là ?</p>
             </div>
@@ -1814,6 +1817,9 @@
             ></textarea>
             
             <div class="review-buttons">
+                <div class="error-message" id="reviewErrorMessage" style="display: none; color: #dc3545; text-align: center; margin-bottom: 15px; font-size: 0.9em;">
+                    ⚠️ Ajoute des étoiles et ton avis avant d'envoyer
+                </div>
                 <button class="review-btn-primary" id="submitReview" disabled>
                     Envoyer mon avis
                 </button>
@@ -2935,15 +2941,32 @@ function initializeReviewSystem() {
     
     // Détecter quand du texte est entré dans le textarea
     document.getElementById('reviewComment').addEventListener('input', function() {
+        checkReviewForm();
+    });
+    
+    // Fonction pour vérifier si le formulaire est complet
+    function checkReviewForm() {
         const submitBtn = document.getElementById('submitReview');
-        const hasText = this.value.trim().length > 0;
+        const errorMessage = document.getElementById('reviewErrorMessage');
+        const hasStars = selectedRating > 0;
+        const hasText = document.getElementById('reviewComment').value.trim().length > 0;
         
-        if (hasText) {
+        if (hasStars && hasText) {
+            submitBtn.disabled = false;
             submitBtn.classList.add('active');
+            errorMessage.style.display = 'none';
         } else {
+            submitBtn.disabled = true;
             submitBtn.classList.remove('active');
         }
-    });
+    }
+    
+    // Modifier la fonction updateStars pour vérifier le formulaire
+    const originalUpdateStars = updateStars;
+    updateStars = function(rating) {
+        originalUpdateStars(rating);
+        checkReviewForm();
+    };
 }
 
 // Mettre à jour l'affichage des étoiles
@@ -2992,9 +3015,18 @@ function closeReview() {
 
 // Soumettre la review
 async function submitReview() {
-    if (!selectedRating || !currentUser) return;
+    const errorMessage = document.getElementById('reviewErrorMessage');
+    
+    if (!selectedRating || !currentUser) {
+        errorMessage.style.display = 'block';
+        return;
+    }
     
     const comment = document.getElementById('reviewComment').value.trim();
+    if (!comment) {
+        errorMessage.style.display = 'block';
+        return;
+    }
     const submitBtn = document.getElementById('submitReview');
     
     submitBtn.disabled = true;
