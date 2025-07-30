@@ -833,7 +833,7 @@
         }
    /* Styles pour le popup de review */
 .review-modal {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100vw;
@@ -2902,12 +2902,18 @@ function showReviewPopup() {
         return;
     }
     
-    // Afficher le popup d'abord
+    // Récupérer la position actuelle de l'utilisateur
+    const currentScrollY = window.scrollY;
+    const viewportHeight = window.innerHeight;
+    
+    // Positionner le popup à la position actuelle de l'utilisateur
     const modal = document.getElementById('reviewModal');
+    modal.style.top = currentScrollY + 'px';
     modal.classList.add('active');
     
-    // Faire défiler vers le popup pour qu'il soit visible
-    modal.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Faire défiler vers le popup pour qu'il soit centré dans le viewport
+    const popupPosition = currentScrollY + (viewportHeight / 2);
+    window.scrollTo({ top: popupPosition - (viewportHeight / 2), behavior: 'smooth' });
     
     initializeReviewSystem();
 }
