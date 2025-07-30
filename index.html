@@ -871,10 +871,13 @@
     background: var(--bg-card);
     padding: 40px;
     max-width: 600px;
-    margin: 0 auto;
-    min-height: 100vh;
+    margin: 20px auto;
+    min-height: auto;
+    max-height: 90vh;
+    overflow-y: auto;
     box-sizing: border-box;
     color: var(--text-primary);
+    border-radius: 30px;
 }
 
 @keyframes slideUp {
@@ -1796,7 +1799,7 @@
         <div id="reviewForm">
             <div class="review-header">
                 <button class="back-btn" onclick="closeReview()" style="position: absolute; top: 20px; left: 20px; background: none; border: none; font-size: 1.5em; cursor: pointer; color: var(--text-secondary); transition: color 0.3s;">
-                    ← Retour
+                    ←
                 </button>
                 <h2 class="review-title">Ton avis compte ! ✨</h2>
                 <p class="review-subtitle">Comment évalues-tu ton expérience jusque là ?</p>
