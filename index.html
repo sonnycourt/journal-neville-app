@@ -2887,10 +2887,15 @@ function showReviewPopup() {
         return;
     }
     
-    const modal = document.getElementById('reviewModal');
-    modal.classList.add('active');
+    // 1. D'abord faire défiler vers le haut
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     
-    initializeReviewSystem();
+    // 2. Attendre que le scroll soit fini puis afficher le popup
+    setTimeout(() => {
+        const modal = document.getElementById('reviewModal');
+        modal.classList.add('active');
+        initializeReviewSystem();
+    }, 500);
 }
 
 // Fermer le popup
