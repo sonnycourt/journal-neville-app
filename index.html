@@ -2184,9 +2184,10 @@ function getCurrentProgramDay() {
             <!-- Section spéciale pour le souhait principal -->
             <div class="wish-section" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 20px; padding: 25px; margin-bottom: 40px; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3); position: relative; overflow: hidden;">
                 <div style="position: absolute; top: -10px; right: -10px; font-size: 3em; opacity: 0.1;">✨</div>
-                <h3 style="margin: 0 0 15px 0; font-size: 1.4em; display: flex; align-items: center; gap: 10px;">
+                <h3 style="margin: 0 0 15px 0; font-size: 1.4em; display: flex; align-items: center; gap: 10px; position: relative;">
                     <span style="font-size: 1.2em;">🎯</span>
                     Mon souhait principal
+                    <span class="wish-info-icon" style="font-size: 0.8em; margin-left: 8px; cursor: pointer; opacity: 0.7; transition: opacity 0.3s ease;" title="Pour modifier ton souhait, reviens au jour 1 et clique sur le bouton 'Mettre à jour'">ⓘ</span>
                 </h3>
                 <textarea id="wish-${dayNumber}" placeholder="Quel est ton souhait principal pour ces 30 jours ? (ex: trouver l'amour, réussir mon projet, guérir...)" ${dayNumber === 1 ? '' : 'readonly'} style="background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.3); color: white; border-radius: 15px; padding: 15px; width: 100%; min-height: 80px; font-size: 1em; resize: vertical; font-family: inherit;">${journalData.wish || ''}</textarea>
                 ${dayNumber === 1 ? '<small style="color: rgba(255,255,255,0.8); font-size: 0.9em; display: block; margin-top: 8px;">Ce souhait restera visible pendant tout le programme</small>' : ''}
