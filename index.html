@@ -2890,14 +2890,11 @@ function showReviewPopup() {
     const modal = document.getElementById('reviewModal');
     modal.classList.add('active');
     
-    // Attendre que le popup soit visible avant de scroller
-    setTimeout(() => {
-        // 1. Scroll automatique vers le popup
-        modal.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
-        // 2. Bloquer le scroll après
-        document.body.style.overflow = 'hidden';
-    }, 100);
+    // Faire défiler vers le haut de la page pour centrer le popup dans le viewport
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    // Bloquer le scroll après
+    document.body.style.overflow = 'hidden';
     
     initializeReviewSystem();
 }
