@@ -838,7 +838,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: white;
+    background: var(--bg-card);
     display: none;
     z-index: 3000;
     animation: slideInFromRight 0.4s ease;
@@ -868,12 +868,13 @@
 }
 
 .review-content {
-    background: white;
+    background: var(--bg-card);
     padding: 40px;
     max-width: 600px;
     margin: 0 auto;
     min-height: 100vh;
     box-sizing: border-box;
+    color: var(--text-primary);
 }
 
 @keyframes slideUp {
