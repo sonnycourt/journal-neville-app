@@ -2887,15 +2887,14 @@ function showReviewPopup() {
         return;
     }
     
-    // 1. D'abord faire défiler vers le haut
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Afficher le popup d'abord
+    const modal = document.getElementById('reviewModal');
+    modal.classList.add('active');
     
-    // 2. Attendre que le scroll soit fini puis afficher le popup
-    setTimeout(() => {
-        const modal = document.getElementById('reviewModal');
-        modal.classList.add('active');
-        initializeReviewSystem();
-    }, 500);
+    // Faire défiler vers le popup pour qu'il soit visible
+    modal.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    
+    initializeReviewSystem();
 }
 
 // Fermer le popup
