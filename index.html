@@ -1061,33 +1061,29 @@
 
         /* Modal de progression */
         .progress-modal {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
+            background: var(--bg-card);
             display: none;
-            align-items: center;
-            justify-content: center;
             z-index: 3000;
-            animation: fadeIn 0.3s ease;
+            animation: slideInFromRight 0.4s ease;
+            overflow-y: auto;
         }
 
         .progress-modal.active {
-            display: flex;
+            display: block;
         }
 
         .progress-content {
             background: var(--bg-card);
-            border-radius: 30px;
             padding: 40px;
             max-width: 800px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-            animation: slideUp 0.4s ease;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            margin: 0 auto;
+            min-height: 100vh;
+            box-sizing: border-box;
             color: var(--text-primary);
         }
 
@@ -1105,18 +1101,7 @@
             -webkit-text-fill-color: transparent;
         }
 
-        .close-progress-btn {
-            background: none;
-            border: none;
-            font-size: 2em;
-            cursor: pointer;
-            color: var(--text-secondary);
-            transition: color 0.3s;
-        }
 
-        .close-progress-btn:hover {
-            color: var(--text-primary);
-        }
 
         .progress-stats-grid {
             display: grid;
@@ -3193,19 +3178,8 @@ const daysUntilNext = maxDay < totalDays ? 1 : 0;
     
     content.innerHTML = html;
     
-    // Récupérer la position actuelle de l'utilisateur
-    const currentScrollY = window.scrollY;
-    const viewportHeight = window.innerHeight;
-    
-    // Positionner le popup à la position actuelle de l'utilisateur
-    modal.style.top = currentScrollY + 'px';
     modal.classList.add('active');
-    
-    // Attendre un peu puis faire défiler vers le popup
-    setTimeout(() => {
-        const popupPosition = currentScrollY + (viewportHeight / 2);
-        window.scrollTo({ top: popupPosition - (viewportHeight / 2), behavior: 'smooth' });
-    }, 100);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // Fonction pour fermer le modal
@@ -3779,8 +3753,10 @@ function addSparkles(element) {
     <div class="progress-modal" id="progressSummaryModal">
             <div class="progress-content">
         <div class="progress-header">
+            <button class="back-btn" onclick="closeProgressSummary()" style="position: absolute; top: 20px; left: 20px; background: none; border: none; font-size: 1.5em; cursor: pointer; color: var(--text-secondary); transition: color 0.3s;">
+                ←
+            </button>
             <h2 class="progress-title">📊 Ma Progression Détaillée</h2>
-            <button class="close-progress-btn" onclick="closeProgressSummary()">&times;</button>
         </div>
         
         <!-- Onglets -->
