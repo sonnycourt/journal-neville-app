@@ -833,34 +833,46 @@
         }
    /* Styles pour le popup de review */
 .review-modal {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
+    background: white;
     display: none;
-    align-items: center;
-    justify-content: center;
     z-index: 3000;
-    animation: fadeIn 0.3s ease;
+    animation: slideInFromRight 0.4s ease;
+    overflow-y: auto;
 }
 
 .review-modal.active {
-    display: flex;
+    display: block;
+}
+
+@keyframes slideInFromRight {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideOutToRight {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(100%);
+    }
 }
 
 .review-content {
     background: white;
-    border-radius: 30px;
     padding: 40px;
-    max-width: 500px;
-    width: 90%;
-    max-height: 90vh;
-    overflow-y: auto;
-    animation: slideUp 0.4s ease;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    margin: 0;
+    max-width: 600px;
+    margin: 0 auto;
+    min-height: 100vh;
     box-sizing: border-box;
 }
 
@@ -2902,18 +2914,12 @@ function showReviewPopup() {
         return;
     }
     
-    // Récupérer la position actuelle de l'utilisateur
-    const currentScrollY = window.scrollY;
-    const viewportHeight = window.innerHeight;
-    
-    // Positionner le popup à la position actuelle de l'utilisateur
+    // Afficher la "page" review
     const modal = document.getElementById('reviewModal');
-    modal.style.top = currentScrollY + 'px';
     modal.classList.add('active');
     
-    // Faire défiler vers le popup pour qu'il soit centré dans le viewport
-    const popupPosition = currentScrollY + (viewportHeight / 2);
-    window.scrollTo({ top: popupPosition - (viewportHeight / 2), behavior: 'smooth' });
+    // Scroll vers le haut pour voir la page
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     
     initializeReviewSystem();
 }
