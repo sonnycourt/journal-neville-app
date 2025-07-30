@@ -282,6 +282,49 @@
             40% { transform: scale(1); }
         }
 
+        /* Bulle d'info pour le souhait */
+        .wish-info-bubble {
+            position: fixed;
+            background: var(--bg-card);
+            border: 2px solid var(--text-secondary);
+            border-radius: 15px;
+            padding: 20px;
+            max-width: 300px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 5000;
+            color: var(--text-primary);
+            font-size: 0.9em;
+            line-height: 1.4;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .wish-info-bubble.show {
+            display: block;
+        }
+
+        .wish-info-bubble::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 20px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid var(--bg-card);
+        }
+
+        @media (max-width: 768px) {
+            .wish-info-bubble {
+                max-width: 280px;
+                left: 50% !important;
+                transform: translateX(-50%);
+                top: 50% !important;
+                transform: translate(-50%, -50%);
+            }
+        }
+
         @keyframes fadeInOut {
             0%, 100% { opacity: 0; transform: scale(0.5); }
             50% { opacity: 1; transform: scale(1); }
@@ -2253,7 +2296,7 @@ function getCurrentProgramDay() {
                 <h3 style="margin: 0 0 15px 0; font-size: 1.4em; display: flex; align-items: center; gap: 10px; position: relative;">
                     <span style="font-size: 1.2em;">🎯</span>
                     Mon souhait principal
-                    <span class="wish-info-icon" style="font-size: 0.8em; margin-left: 8px; cursor: pointer; opacity: 0.7; transition: opacity 0.3s ease;" title="Pour modifier ton souhait, reviens au jour 1 et clique sur le bouton 'Mettre à jour'">ⓘ</span>
+                    <span class="wish-info-icon" onclick="showWishInfo()" style="font-size: 0.8em; margin-left: 8px; cursor: pointer; opacity: 0.7; transition: opacity 0.3s ease;">ⓘ</span>
                 </h3>
                 <textarea id="wish-${dayNumber}" placeholder="Quel est ton souhait principal pour ces 30 jours ? (ex: trouver l'amour, réussir mon projet, guérir...)" ${dayNumber === 1 ? '' : 'readonly'} style="background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.3); color: white; border-radius: 15px; padding: 15px; width: 100%; min-height: 80px; font-size: 1em; resize: vertical; font-family: inherit;">${journalData.wish || ''}</textarea>
                 ${dayNumber === 1 ? '<small style="color: rgba(255,255,255,0.8); font-size: 0.9em; display: block; margin-top: 8px;">Ce souhait restera visible pendant tout le programme</small>' : ''}
@@ -2638,6 +2681,35 @@ async function sendCompletionEmail() {
         // Ne pas bloquer l'expérience utilisateur
     }
 }
+    // Afficher la bulle d'info du souhait
+    function showWishInfo() {
+        const bubble = document.getElementById('wishInfoBubble');
+        if (bubble) {
+            bubble.classList.add('show');
+            
+            // Positionner la bulle près du bouton
+            const icon = document.querySelector('.wish-info-icon');
+            if (icon) {
+                const rect = icon.getBoundingClientRect();
+                bubble.style.left = rect.left + 'px';
+                bubble.style.top = (rect.bottom + 10) + 'px';
+            }
+            
+            // Fermer après 5 secondes
+            setTimeout(() => {
+                bubble.classList.remove('show');
+            }, 5000);
+        }
+    }
+
+    // Fermer la bulle d'info
+    function closeWishInfo() {
+        const bubble = document.getElementById('wishInfoBubble');
+        if (bubble) {
+            bubble.classList.remove('show');
+        }
+    }
+
     // Afficher la célébration
     function showCelebration() {
         const modal = document.getElementById('celebrationModal');
@@ -3803,6 +3875,13 @@ function addSparkles(element) {
                 </a>
             </div>
         </div>
+    </div>
+
+    <!-- Bulle d'info pour le souhait -->
+    <div class="wish-info-bubble" id="wishInfoBubble" onclick="closeWishInfo()">
+        <div style="margin-bottom: 10px; font-weight: bold; color: #667eea;">💡 Info</div>
+        <div>Pour modifier ton souhait principal, reviens au jour 1 et clique sur le bouton "Mettre à jour".</div>
+        <div style="margin-top: 10px; font-size: 0.8em; color: var(--text-secondary);">Clique pour fermer</div>
     </div>
 
     <!-- Bouton toggle thème -->
