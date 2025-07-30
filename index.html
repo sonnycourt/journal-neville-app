@@ -1006,11 +1006,11 @@
 
         /* Modal de progression */
         .progress-modal {
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            right: 0;
+            bottom: 0;
             background: rgba(0, 0, 0, 0.8);
             display: none;
             align-items: center;
@@ -3099,7 +3099,18 @@ const daysUntilNext = maxDay < totalDays ? 1 : 0;
     }
     
     content.innerHTML = html;
+    
+    // Récupérer la position actuelle de l'utilisateur
+    const currentScrollY = window.scrollY;
+    const viewportHeight = window.innerHeight;
+    
+    // Positionner le popup à la position actuelle de l'utilisateur
+    modal.style.top = currentScrollY + 'px';
     modal.classList.add('active');
+    
+    // Faire défiler vers le popup pour qu'il soit centré dans le viewport
+    const popupPosition = currentScrollY + (viewportHeight / 2);
+    window.scrollTo({ top: popupPosition - (viewportHeight / 2), behavior: 'smooth' });
 }
 
 // Fonction pour fermer le modal
