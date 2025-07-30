@@ -823,8 +823,8 @@
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     background: rgba(0, 0, 0, 0.8);
     display: none;
     align-items: center;
@@ -2890,12 +2890,6 @@ function showReviewPopup() {
     const modal = document.getElementById('reviewModal');
     modal.classList.add('active');
     
-    // Faire défiler vers le haut de la page pour centrer le popup dans le viewport
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    
-    // Bloquer le scroll après
-    document.body.style.overflow = 'hidden';
-    
     initializeReviewSystem();
 }
 
@@ -2903,9 +2897,6 @@ function showReviewPopup() {
 function closeReview() {
     const modal = document.getElementById('reviewModal');
     modal.classList.remove('active');
-    
-    // Réactiver le scroll de la page
-    document.body.style.overflow = '';
     
     // Réinitialiser
     selectedRating = 0;
