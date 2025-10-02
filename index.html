@@ -1897,6 +1897,104 @@ const actionCodeSettings = {
     ];
     
     let currentUser = null;
+    
+    // ADMIN MODE START - Section admin pour debug (facilement supprimable)
+    let adminMode = false;
+    let originalUser = null;
+    let adminClickCount = 0;
+    
+    // Activation du mode admin (5 clics sur le titre)
+    function initAdminMode() {
+        const title = document.querySelector('h1');
+        if (title) {
+            title.addEventListener('click', () => {
+                adminClickCount++;
+                if (adminClickCount === 5) {
+                    const password = prompt('Code admin ?');
+                    if (password === '261500') {
+                        adminMode = true;
+                        showAdminPanel();
+                        console.log('🔧 Mode admin activé');
+                    }
+                    adminClickCount = 0;
+                }
+                setTimeout(() => adminClickCount = 0, 2000); // Reset après 2s
+            });
+        }
+    }
+    
+    function showAdminPanel() {
+        if (!adminMode) return;
+        
+        const adminPanel = document.createElement('div');
+        adminPanel.id = 'adminPanel';
+        adminPanel.style.cssText = `
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #1a1a1a;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 15px;
+            z-index: 10000;
+            color: white;
+            font-family: Arial;
+            min-width: 300px;
+        `;
+        
+        adminPanel.innerHTML = `
+            <h3 style="margin: 0 0 10px 0; color: #667eea;">🔧 Mode Admin</h3>
+            <input type="email" id="adminEmail" placeholder="Email utilisateur" style="width: 100%; padding: 5px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #667eea;">
+            <button onclick="connectAsUser()" style="width: 100%; padding: 8px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 10px;">Se connecter à ce compte</button>
+            <button onclick="returnToOriginalAccount()" style="width: 100%; padding: 8px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 10px;">Retour à mon compte</button>
+            <button onclick="closeAdminPanel()" style="width: 100%; padding: 8px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">Fermer</button>
+        `;
+        
+        document.body.appendChild(adminPanel);
+    }
+    
+    function connectAsUser() {
+        const email = document.getElementById('adminEmail').value;
+        if (!email) {
+            alert('Email requis');
+            return;
+        }
+        
+        // Sauvegarder l'utilisateur original
+        if (!originalUser) {
+            originalUser = { ...currentUser };
+        }
+        
+        // Simuler l'utilisateur cible
+        currentUser = {
+            uid: 'admin-simulation-' + email.replace('@', '-'),
+            email: email
+        };
+        
+        console.log('🔧 Connexion admin à:', email);
+        console.log('🔧 Utilisateur original sauvegardé:', originalUser);
+        
+        // Recharger les données
+        loadUserData();
+        alert(`Connecté en mode admin à: ${email}`);
+    }
+    
+    function returnToOriginalAccount() {
+        if (originalUser) {
+            currentUser = originalUser;
+            originalUser = null;
+            console.log('🔧 Retour à l\'utilisateur original:', currentUser);
+            loadUserData();
+            alert('Retour à ton compte original');
+        }
+    }
+    
+    function closeAdminPanel() {
+        const panel = document.getElementById('adminPanel');
+        if (panel) panel.remove();
+        adminMode = false;
+    }
+    // ADMIN MODE END
 function getCurrentProgramDay() {
     try {
         // Prioriser la date de Firebase, sinon localStorage
@@ -2196,6 +2294,7 @@ function getCurrentProgramDay() {
         updateDailyQuote();
         showTodayEntry();
         initializeChart();
+        initAdminMode(); // Initialiser le mode admin
     }
 
     function updateUIWithData() {
