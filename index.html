@@ -1898,15 +1898,37 @@ const actionCodeSettings = {
     
     let currentUser = null;
 function getCurrentProgramDay() {
-    // Prioriser la date de Firebase, sinon localStorage
-    const startDate = new Date(journalData.startDate || localStorage.getItem('journalStartDate') || new Date());
-    const today = new Date();
-    
-    startDate.setHours(0, 0, 0, 0);
-    today.setHours(0, 0, 0, 0);
-    
-    const dayNumber = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
-    return Math.min(dayNumber, 30);
+    try {
+        // Prioriser la date de Firebase, sinon localStorage
+        let startDate;
+        const startDateString = journalData.startDate || localStorage.getItem('journalStartDate');
+        
+        if (startDateString) {
+            startDate = new Date(startDateString);
+            // Protection : si la date est invalide (future, trop ancienne, mal formatée)
+            if (isNaN(startDate.getTime()) || startDate > new Date() || startDate < new Date('2020-01-01')) {
+                startDate = new Date();
+            }
+        } else {
+            startDate = new Date();
+        }
+        
+        const today = new Date();
+        
+        startDate.setHours(0, 0, 0, 0);
+        today.setHours(0, 0, 0, 0);
+        
+        const dayNumber = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
+        
+        // Protection : s'assurer que le résultat est valide (entre 1 et 30)
+        const validDayNumber = Math.max(1, Math.min(dayNumber || 1, 30));
+        
+        return validDayNumber;
+    } catch (error) {
+        // En cas d'erreur, retourner jour 1 par défaut
+        console.warn('Erreur dans getCurrentProgramDay, utilisation du jour 1:', error);
+        return 1;
+    }
 }
     let journalData = {
         entries: {},
