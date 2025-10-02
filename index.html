@@ -2824,8 +2824,12 @@ function createConfetti() {
                     daysCompleted: 0,
                     bestStreak: 0,
                     currentStreak: 0
-                }
+                },
+                startDate: new Date().toISOString()
             };
+            
+            // Réinitialiser la date de début dans localStorage
+            localStorage.setItem('journalStartDate', new Date().toISOString());
             
             // Sauvegarder et recharger
             saveToFirebase(journalData);
