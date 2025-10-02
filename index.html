@@ -2495,7 +2495,7 @@ function getCurrentProgramDay() {
 
     function showTodayEntry() {
         const today = new Date();
-        const startDate = new Date(localStorage.getItem('journalStartDate') || today);
+        const startDate = new Date(journalData.startDate || localStorage.getItem('journalStartDate') || today);
         const dayNumber = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
         
         if (dayNumber >= 1 && dayNumber <= 30) {
