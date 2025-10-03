@@ -1857,6 +1857,9 @@
     // Configurer la persistance de session
     auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
     
+    // Initialiser le mode admin dès le chargement (même sur page login)
+    initAdminMode();
+    
 // Configuration pour le magic link
 const actionCodeSettings = {
     url: 'https://journal.sonnycourt.com',
@@ -2302,7 +2305,6 @@ function getCurrentProgramDay() {
         updateDailyQuote();
         showTodayEntry();
         initializeChart();
-        initAdminMode(); // Initialiser le mode admin
     }
 
     function updateUIWithData() {
