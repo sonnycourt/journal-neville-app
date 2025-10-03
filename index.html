@@ -2041,6 +2041,12 @@ const actionCodeSettings = {
                 if (data) {
                     // Remplacer complètement journalData par ses données
                     journalData = data;
+                    
+                    // Protection : s'assurer que entries existe toujours
+                    if (!journalData.entries) {
+                        journalData.entries = {};
+                    }
+                    
                     console.log('🔧 Données utilisateur chargées:', journalData);
                     
                     // Synchroniser la date de début si elle existe
@@ -2348,6 +2354,11 @@ function getCurrentProgramDay() {
                 const data = snapshot.val();
                 if (data) {
                     journalData = data;
+                    
+                    // Protection : s'assurer que entries existe toujours
+                    if (!journalData.entries) {
+                        journalData.entries = {};
+                    }
                     
                     // AJOUTER ICI
                     migrateExistingUsers();
