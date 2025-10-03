@@ -1901,26 +1901,21 @@ const actionCodeSettings = {
     // ADMIN MODE START - Section admin pour debug (facilement supprimable)
     let adminMode = false;
     let originalUser = null;
-    let adminClickCount = 0;
     
-    // Activation du mode admin (5 clics sur le titre)
+    // Activation du mode admin (Cmd+Shift+A sur Mac)
     function initAdminMode() {
-        const title = document.querySelector('h1');
-        if (title) {
-            title.addEventListener('click', () => {
-                adminClickCount++;
-                if (adminClickCount === 5) {
-                    const password = prompt('Code admin ?');
-                    if (password === '261500') {
-                        adminMode = true;
-                        showAdminPanel();
-                        console.log('🔧 Mode admin activé');
-                    }
-                    adminClickCount = 0;
+        document.addEventListener('keydown', (event) => {
+            // Cmd+Shift+A sur Mac (ou Ctrl+Shift+A sur Windows/Linux)
+            if ((event.metaKey || event.ctrlKey) && event.shiftKey && event.key === 'A') {
+                event.preventDefault(); // Empêcher la sélection de tout
+                const password = prompt('Code admin ?');
+                if (password === '261500') {
+                    adminMode = true;
+                    showAdminPanel();
+                    console.log('🔧 Mode admin activé');
                 }
-                setTimeout(() => adminClickCount = 0, 2000); // Reset après 2s
-            });
-        }
+            }
+        });
     }
     
     function showAdminPanel() {
