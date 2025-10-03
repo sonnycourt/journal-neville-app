@@ -1976,18 +1976,43 @@ const actionCodeSettings = {
             originalUser = { ...currentUser };
         }
         
-        // Simuler l'utilisateur cible
-        currentUser = {
-            uid: 'admin-simulation-' + email.replace('@', '-'),
-            email: email
-        };
+        console.log('🔧 Recherche de l\'utilisateur:', email);
         
-        console.log('🔧 Connexion admin à:', email);
-        console.log('🔧 Utilisateur original sauvegardé:', originalUser);
-        
-        // Recharger les données
-        loadUserData();
-        alert(`Connecté en mode admin à: ${email}`);
+        // Chercher l'utilisateur dans Firebase par email
+        database.ref('users').once('value').then((snapshot) => {
+            const users = snapshot.val();
+            let targetUser = null;
+            
+            // Parcourir tous les utilisateurs pour trouver celui avec cet email
+            if (users) {
+                for (const [uid, userData] of Object.entries(users)) {
+                    if (userData.email === email) {
+                        targetUser = {
+                            uid: uid,
+                            email: email
+                        };
+                        break;
+                    }
+                }
+            }
+            
+            if (targetUser) {
+                // Utilisateur trouvé
+                currentUser = targetUser;
+                console.log('🔧 Utilisateur trouvé:', targetUser);
+                
+                // Charger ses données
+                loadUserData();
+                alert(`Connecté en mode admin à: ${email}`);
+            } else {
+                // Utilisateur non trouvé
+                console.log('🔧 Utilisateur non trouvé:', email);
+                alert(`Utilisateur ${email} non trouvé dans la base de données`);
+            }
+        }).catch((error) => {
+            console.error('🔧 Erreur lors de la recherche:', error);
+            alert('Erreur lors de la recherche de l\'utilisateur');
+        });
     }
     
     function returnToOriginalAccount() {
