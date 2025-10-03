@@ -2001,8 +2001,9 @@ const actionCodeSettings = {
                 currentUser = targetUser;
                 console.log('🔧 Utilisateur trouvé:', targetUser);
                 
-                // Charger ses données
+                // Charger ses données et afficher l'interface
                 loadUserData();
+                showApp(); // Forcer l'affichage de l'interface principale
                 alert(`Connecté en mode admin à: ${email}`);
             } else {
                 // Utilisateur non trouvé
