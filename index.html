@@ -2001,9 +2001,8 @@ const actionCodeSettings = {
                 currentUser = targetUser;
                 console.log('🔧 Utilisateur trouvé:', targetUser);
                 
-                // Charger ses données et afficher l'interface
-                loadUserData();
-                showApp(); // Forcer l'affichage de l'interface principale
+                // Simuler sa session complète
+                simulateUserSession(targetUser);
                 alert(`Connecté en mode admin à: ${email}`);
             } else {
                 // Utilisateur non trouvé
@@ -2030,6 +2029,52 @@ const actionCodeSettings = {
         const panel = document.getElementById('adminPanel');
         if (panel) panel.remove();
         adminMode = false;
+    }
+    
+    function simulateUserSession(targetUser) {
+        console.log('🔧 Simulation de la session utilisateur:', targetUser.email);
+        
+        // Charger ses données exactes depuis Firebase
+        database.ref('users/' + targetUser.uid + '/journal').once('value')
+            .then((snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    // Remplacer complètement journalData par ses données
+                    journalData = data;
+                    console.log('🔧 Données utilisateur chargées:', journalData);
+                    
+                    // Synchroniser la date de début si elle existe
+                    if (journalData.startDate) {
+                        localStorage.setItem('journalStartDate', journalData.startDate);
+                    }
+                    
+                    // Forcer l'affichage de l'interface (comme une vraie connexion)
+                    showApp();
+                    
+                    // Initialiser l'interface avec ses données
+                    updateUIWithData();
+                    
+                    console.log('🔧 Interface initialisée avec ses données');
+                    console.log('🔧 getCurrentProgramDay():', getCurrentProgramDay());
+                } else {
+                    console.log('🔧 Aucune donnée trouvée pour cet utilisateur');
+                    // Initialiser avec des données vides
+                    journalData = {
+                        entries: {},
+                        stats: {
+                            daysCompleted: 0,
+                            bestStreak: 0,
+                            currentStreak: 0
+                        }
+                    };
+                    showApp();
+                    updateUIWithData();
+                }
+            })
+            .catch((error) => {
+                console.error('🔧 Erreur lors du chargement des données:', error);
+                alert('Erreur lors du chargement des données utilisateur');
+            });
     }
     // ADMIN MODE END
 function getCurrentProgramDay() {
