@@ -682,6 +682,24 @@
             color: white;
         }
 
+        .reset-cycle-btn {
+            background: var(--bg-card);
+            color: #ff6b6b;
+            border: 2px solid #ff6b6b;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 20px auto;
+        }
+
+        .reset-cycle-btn:hover {
+            background: #ff6b6b;
+            color: white;
+        }
+
         /* Styles pour la célébration */
         .celebration-modal {
             position: fixed;
@@ -1750,6 +1768,8 @@
         </div>
 
         <button class="export-btn" onclick="exportJournal()">📥 Exporter mon journal</button>
+
+        <button class="reset-cycle-btn" onclick="resetCurrentCycle()">🔄 Recommencer le cycle à zéro</button>
 
         <!-- Modal de célébration -->
         <div class="celebration-modal" id="celebrationModal">
@@ -3050,6 +3070,36 @@ function createConfetti() {
             closeCelebration();
             updateUIWithData();
             showEntry(1);
+        }
+    }
+
+    // Recommencer le cycle actuel à zéro (sans archiver)
+    function resetCurrentCycle() {
+        const message = 'Es-tu sûr de vouloir recommencer le cycle actuel à zéro ?\n\n⚠️ Cette action effacera toutes les données du cycle en cours.\n\nNote : Tes cycles complétés précédents resteront disponibles dans "Mes archives".';
+        
+        if (confirm(message)) {
+            // Réinitialiser les données SANS archiver
+            journalData = {
+                entries: {},
+                stats: {
+                    daysCompleted: 0,
+                    bestStreak: 0,
+                    currentStreak: 0
+                },
+                startDate: new Date().toISOString()
+            };
+            
+            // Réinitialiser la date de début dans localStorage
+            localStorage.setItem('journalStartDate', new Date().toISOString());
+            
+            // Sauvegarder et recharger
+            saveToFirebase(journalData);
+            localStorage.removeItem('celebrated_' + currentUser.uid);
+            updateUIWithData();
+            showEntry(1);
+            
+            // Message de confirmation
+            alert('✅ Ton cycle a été réinitialisé ! Tu peux maintenant recommencer depuis le jour 1.');
         }
     }
 
